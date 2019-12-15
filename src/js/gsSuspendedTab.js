@@ -352,6 +352,29 @@ var gsSuspendedTab = (function() {
         );
       }
     });
+
+	// Based on https://github.com/deanoemcke/thegreatsuspender/pull/423
+	//add hotkey listener for next/previous tab
+	//responds to Shift+E and Shift+R to match Surfingkeys
+	_window.addEventListener('keypress', function(event) {
+		var nextPrevTab = function(dir) {
+			chrome.tabs.query({currentWindow: true}, function(tabs) {
+				var i = 0; while(!tabs[i].active) { i++; };
+				chrome.tabs.update(tabs[(i+tabs.length+dir) % tabs.length].id, {active: true});
+			});
+		};
+
+		if ( event.shiftKey === true ) {
+			switch ( event.key ) {
+				case 'E':
+					nextPrevTab(-1);
+					break;
+				case 'R':
+					nextPrevTab(1);
+					break;
+			}
+		}
+	});
   }
 
   function setUnsuspendTabHandlers(_document, tab) {
